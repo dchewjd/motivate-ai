@@ -1,91 +1,84 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import styles from './page.module.css'
+"use client";
 
-const inter = Inter({ subsets: ['latin'] })
+import Image from "next/image";
+import { Inter } from "next/font/google";
+import "./page.module.css";
+import { useRef, useState } from "react";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export default function Home() {
+  const inputRef = useRef(null as any);
+  const [quote, setQuote] = useState("" as any);
+  const [loading, setLoading] = useState(false as boolean);
+
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+    setLoading(true);
+    console.log("submitted");
+    console.log(inputRef.current?.value);
+
+    const response: any = await fetch("/api/generateAnswer", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        prompt: inputRef.current?.value.toString().trim(),
+      }),
+    }).then((response: { json: () => void }) => response.json());
+
+    console.log(response?.response);
+    setQuote(response?.response);
+    setLoading(false);
+  };
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+    <main className="flex flex-col justify-center items-center gap-4 bg-purple-200 h-full w-screen px-8 my-10">
+      <h1 className="text-3xl md:text-5xl font-bold">Motivate AI</h1>
+      <h3 className="text-md md:text-lg text-center">
+        Enter a topic and we'll generate a super cringy motivational quote for
+        you
+      </h3>
+      <Image
+        src={"/cat.jpg"}
+        alt={""}
+        width={400}
+        height={100}
+        className="rounded-2xl"
+      ></Image>
+      <p className="text-md md:text-lg text-center">
+        Create a cringy quote about...
+      </p>
+      {/* input that accepts text */}
+      <form method="post" onSubmit={handleSubmit}>
+        <div className="">
+          <input
+            ref={inputRef}
+            required
+            type="text"
+            id="desc"
+            placeholder="eg. lemon, potatoes, water"
+            className="w-80 max-w-sm p-2 bg-gray-50 rounded-lg border border-gray-300 text-gray-900 text-sm focus:ring-1 focus:outline-none focus:border-sky-500 focus:ring-sky-500 "
+          />
+        </div>
+        {/* button that generates quote */}
+        <div className=" flex justify-center">
+          <button
+            type="submit"
+            disabled={loading}
+            className={`px-4 py-2 mt-4 border border-gray-300 rounded-lg bg-slate-50 ${
+              loading ? " bg-slate-50/50" : ""
+            }`}
           >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+            {loading ? "Loading..." : "Generate Cringe"}
+          </button>
         </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+      </form>
+      <div className="">{loading && <Skeleton count={2} />}</div>
+      <div className="italic text-lg text-center max-w-sm">{quote}</div>
+      <div className="text-xs mt-10 text-gray-500">Powered by ChatGPT-3</div>
     </main>
-  )
+  );
 }
