@@ -2,7 +2,6 @@
 
 import Image from "next/image";
 import { Inter } from "next/font/google";
-import "./page.module.css";
 import { useRef, useState } from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
