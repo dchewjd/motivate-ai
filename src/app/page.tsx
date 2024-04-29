@@ -77,7 +77,7 @@ export default function Home() {
       </form>
       <div className="">{loading && <Skeleton count={2} />}</div>
       <div className="italic text-lg text-center max-w-sm">{quote}</div>
-      <div className="text-xs mt-10 text-gray-500">Powered by ChatGPT-3</div>
+      <div className="text-xs mt-10 text-gray-500">Powered by ChatGPT-3.5</div>
     </main>
   );
 }
